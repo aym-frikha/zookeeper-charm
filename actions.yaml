@@ -16,3 +16,11 @@ upgrade:
       Upgrade the kafka packages or snaps.
       When executed, this action will, potentially, remove old packages/snaps and install the new
       version, then executing a config-changed.
+hold-snap:
+  description: |
+    Hold snap refresh to prevent any service restart or change without charm control.
+  properties:
+    enable:
+      type: boolean
+      default: true
+  required: [enable]

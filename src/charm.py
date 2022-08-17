@@ -11,7 +11,7 @@ import os
 import shutil
 import hashlib
 import cryptography.hazmat.primitives.serialization as serialization
-
+import subprocess
 from charms.kafka_broker.v0.kafka_linux import get_hostname
 
 from ops.main import main
@@ -108,6 +108,8 @@ class ZookeeperCharm(KafkaJavaCharmBase):
                                self.on_upload_keytab_action)
         self.framework.observe(self.on.restart_event,
                                self.on_restart_event)
+        self.framework.observe(self.on.hold_snap_action,
+                               self.on_hold_snap_action)
         self.zk = ZookeeperProvidesRelation(self, 'zookeeper',
                                             port=self.config.get('clientPort',
                                                                  2182))
@@ -271,6 +273,14 @@ class ZookeeperCharm(KafkaJavaCharmBase):
 
     def on_update_status(self, event):
         super().on_update_status(event)
+
+    def on_hold_snap_action(self, event):
+        """Implement the hold snap action."""
+        if event.params.get("enable", True):
+            cmd='''echo 30 12 \* \* \* /usr/bin/snap set system refresh.hold=\"\$(/usr/bin/date --iso-8601=seconds -d \'+30 days\')\" | crontab -'''
+        else:
+            cmd='''crontab  -l | grep -v '/usr/bin/snap set system refresh.hold' | crontab -'''
+        return subprocess.check_call(cmd, shell=True)
 
     def on_restart_event(self, event):
         logger.debug("EVENT DEBUG: on_restart_event called")
