@@ -1,6 +1,6 @@
 # Copyright 2021 pguimaraes
 # See LICENSE file for licensing details.
-name: zookeeper
+name: fe-staging-zookeeper
 description: |
   Zookeeper charm for both Confluent and Apache versions.
   Apache zookeeper uses zookeeper snap.
